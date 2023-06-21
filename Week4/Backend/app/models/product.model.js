@@ -9,7 +9,7 @@ module.exports = mongoose => {
   
         price: Number,
   
-        published:Boolean,
+        published: Boolean,
   
         category: String
   

@@ -5,7 +5,7 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { HomeComponent } from './components/home/home.component';
 
-const routes: Routes = [{ path: '', redirectTo: 'products', pathMatch: 'full' },
+const routes: Routes = [{ path: '', redirectTo: 'home', pathMatch: 'full' },
 { path: 'home', component: HomeComponent },
 { path: 'products', component: ProductsListComponent },
 { path: 'products/:id', component: ProductDetailsComponent },
