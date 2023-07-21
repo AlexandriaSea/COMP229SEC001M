@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from 'src/app/_services/storage.service';
 import { Product } from 'src/app/models/product.model';
 import { ProductService } from 'src/app/services/product.service';
 
@@ -8,30 +9,45 @@ import { ProductService } from 'src/app/services/product.service';
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css']
 })
+
 export class ProductDetailsComponent implements OnInit {
   @Input() viewMode = false;
-
   @Input() currentProduct: Product = {
     name: '',
     description: '',
+    price: 0,
     published: false,
     category: ''
   };
 
   message = '';
+  private roles: string[] = [];
+  isLoggedIn = false;
+  showAdminBoard = false;
+  showModeratorBoard = false;
+  username?: string;
 
   constructor(
     private productService: ProductService,
     private route: ActivatedRoute,
-    private router: Router) { }
+    private router: Router, private storageService: StorageService,) { }
 
   ngOnInit(): void {
     if (!this.viewMode) {
       this.message = '';
       this.getProduct(this.route.snapshot.params["id"]);
     }
-  }
 
+    this.isLoggedIn = this.storageService.isLoggedIn();
+
+    if (this.isLoggedIn) {
+      const user = this.storageService.getUser();
+      this.roles = user.roles;
+      this.showAdminBoard = this.roles.includes('ROLE_ADMIN');
+      this.showModeratorBoard = this.roles.includes('ROLE_MODERATOR');
+      //this.username = user.username;
+    }
+  }
 
   getProduct(id: string): void {
     this.productService.get(id)
@@ -49,6 +65,7 @@ export class ProductDetailsComponent implements OnInit {
       name: this.currentProduct.name,
       description: this.currentProduct.description,
       category: this.currentProduct.category,
+      price: this.currentProduct.price,
       published: status
     };
 
@@ -67,7 +84,6 @@ export class ProductDetailsComponent implements OnInit {
 
   updateProduct(): void {
     this.message = '';
-
     this.productService.update(this.currentProduct.id, this.currentProduct)
       .subscribe({
         next: (res) => {
